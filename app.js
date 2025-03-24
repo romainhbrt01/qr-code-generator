@@ -9,11 +9,29 @@ app.get('/', (req, res) => {
 
 app.get('/generate', async (req, res) => {
   const text = req.query.text;
+  const centerImageUrl = req.query.centerImageUrl;
+  const dark = req.query.dark || '#000000';
+  const light = req.query.light || '#ffffff';
+  const size = parseInt(req.query.size) || 300;
+
   if (!text) {
     return res.status(400).send('Missing "text" query parameter');
   }
+
   try {
-    const qrCodeDataUrl = await QRCode.toDataURL(text);
+    const qrOptions = {
+      errorCorrectionLevel: 'H',
+      margin: 1,
+      width: size,
+      height: size,
+      color: { dark, light }
+    };
+
+    if (centerImageUrl) {
+      qrOptions.logo = { url: centerImageUrl };
+    }
+
+    const qrCodeDataUrl = await QRCode.toDataURL(text, qrOptions);
     res.type('png');
     res.send(Buffer.from(qrCodeDataUrl.split(',')[1], 'base64'));
   } catch (error) {
@@ -24,3 +42,4 @@ app.get('/generate', async (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
