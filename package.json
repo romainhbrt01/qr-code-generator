@@ -7,7 +7,9 @@
   },
   "dependencies": {
     "express": "^4.17.1",
-    "qr-code-styling": "^1.6.0-rc.1",
-    "canvas": "^2.11.0"
+    "qrcode": "^1.4.4",
+    "axios": "^0.21.1",
+    "svg-to-dataurl": "^0.1.0"
   }
 }
+
