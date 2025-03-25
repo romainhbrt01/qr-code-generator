@@ -1,7 +1,7 @@
 const express = require('express');
-const QRCodeStyling = require('qr-code-styling');
-const { createCanvas, loadImage } = require('canvas');
-const fs = require('fs');
+const QRCode = require('qrcode');
+const svgToDataURL = require('svg-to-dataurl');
+const axios = require('axios');
 
 const app = express();
 const port = 3000;
@@ -9,31 +9,37 @@ const port = 3000;
 app.use(express.json());
 
 app.post('/generate-qr', async (req, res) => {
-  const { url } = req.body;
-  
-  const qrCode = new QRCodeStyling({
-    width: 300,
-    height: 300,
-    type: "svg",
-    data: url,
-    image: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGl2ZWxsb18xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDE1OC4xMSAxNzEuMzEiPgogIDwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyOS4zLjEsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiAyLjEuMCBCdWlsZCAxNTEpICAtLT4KICA8ZGVmcz4KICAgIDxzdHlsZT4KICAgICAgLnN0MCB7CiAgICAgICAgZmlsbDogIzIyMjIyMTsKICAgICAgfQogICAgPC9zdHlsZT4KICA8L2RlZnM+CiAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTk5LjM4LDQwLjUxYzkuMzUsMCwxNi45Niw3LjYxLDE2Ljk2LDE2Ljk2djMwLjkzaDEuMjVjNC45MSwwLDguODktMS41NywxMC43Ni0yLjQ3bC44NCwxLjU0Yy0xLjk0LjkzLTYuMzIsMi42OC0xMS42MywyLjY4LTQuMDEsMC02Ljc1LS45LTkuNjUtMS44NS0yLjc5LS45Mi01LjY4LTEuODYtOS42My0xLjg2cy02LjU5LjkyLTkuMjIsMS44MWMtMi43Ni45NC01LjYxLDEuOS0xMC4wNywxLjlzLTcuMjktLjk3LTEwLjAzLTEuOWMtMi42MS0uODktNS4zMS0xLjgxLTkuMTktMS44MXMtNi44NS45NC05LjY2LDEuODZjLTIuOTIuOTUtNS42NywxLjg1LTkuNjksMS44NS01LjU0LDAtOS44LTEuNjctMTEuNjktMi41NmwuODUtMS41NmMxLjg3Ljg2LDUuODksMi4zNywxMC44MSwyLjM3aC4wNXMwLDAsMCwwaDEuMjJ2LTQ2Ljc1aDE1LjkzdjZsMi4xNC0yLjE1YzMuMi0zLjIyLDcuNDYtNC45OSwxMi4wMS00Ljk5LDQuOTUsMCw5LjY0LDIuMTUsMTIuODYsNS45bC45NSwxLjExLjk1LTEuMTFjMy4yMi0zLjc1LDcuOTEtNS45LDEyLjg2LTUuOU04Ny4yOSw4Ni45OWwxLjY0LS41M2MyLjY3LS44Nyw1LjQzLTEuNzcsOS4zNi0xLjc3aC4wOXMuMTYsMCwuMTYsMGgxLjI2czAtMS4yNSwwLTEuMjV2LTIzLjU3YzAtMy40NS0yLjgxLTYuMjUtNi4yNS02LjI1cy02LjI1LDIuODEtNi4yNSw2LjI1djI3LjEyTTU4LjIzLDg0LjcxaDEuMjZzLjE1LS4wMS4xNS0uMDFoLjA3YzMuOTMsMCw2LjcxLjksOS4zOSwxLjc4bDEuNjQuNTR2LTI3LjFjMC0zLjQ1LTIuODEtNi4yNS02LjI2LTYuMjVzLTYuMjUsMi44MS02LjI1LDYuMjV2MjQuOE05OS4zOCwzOS4yNmMtNS4zNiwwLTEwLjM0LDIuMy0xMy44LDYuMzQtMy40Ny00LjA0LTguNDQtNi4zNC0xMy44MS02LjM0LTQuOSwwLTkuNSwxLjkzLTEyLjksNS4zNnYtNC4yMmgtMTguNDN2NDYuNzVzLS4wMiwwLS4wMywwYy02LjQ3LDAtMTEuMzMtMi43Ny0xMS4zMy0yLjc3bC0yLjA1LDMuNzNzNS4zOSwzLjI5LDEzLjQsMy4yOSwxMS43LTMuNzEsMTkuMzUtMy43MSwxMC4yNCwzLjcxLDE5LjIyLDMuNzEsMTEuNjUtMy43MSwxOS4zLTMuNzEsMTEuMDEsMy43MSwxOS4yOCwzLjcxYzcuNTksMCwxMy4zNC0zLjQxLDEzLjM0LTMuNDFsLTIuMDQtMy43M3MtNC44MiwyLjg5LTExLjI3LDIuODl2LTI5LjY4YzAtMTAuMDQtOC4xNy0xOC4yMS0xOC4yMS0xOC4yMU04OC41NCw4NS4yN3YtMjUuNGMwLTIuNzYsMi4yNC01LDUtNXM1LDIuMjUsNSw1djIzLjU3Yy0uMDksMC0uMTcsMC0uMjYsMC00LjA0LDAtNi45My45MS05Ljc1LDEuODNNNTkuNDgsODMuNDV2LTIzLjU0YzAtMi43NiwyLjI0LTUsNS01czUuMDEsMi4yNSw1LjAxLDV2MjUuMzhjLTIuODMtLjkyLTUuNzItMS44NC05Ljc4LTEuODQtLjA4LDAtLjE1LDAtLjIzLDAiLz4KICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNNTkuNiw5MS42NGM3LjIzLDAsMTQuOTksMy4xMSwxNS44Myw5LjkxaC0xMC42M2MtLjY0LTIuMDUtMi44LTMuNjEtNS4yOC0zLjYxLTMuMDMsMC00LjkyLDEuNC00LjkyLDMuNjUsMCwxLjQuODgsMi41MywyLjI5LDIuOTQsMS4yNC4zNiwyLjg5LjcxLDQuNjMsMS4wNywyLjMzLjQ5LDQuOTcsMS4wNCw2LjkzLDEuNzIsMS45MS42Niw4LjE1LDMuMyw4LjE1LDkuNzMsMCw4LjYxLTguOTUsMTIuNTMtMTcuMjcsMTIuNTMtMy44NSwwLTguMDctMS4yOS0xMS4zLTMuNDYtMy4xNi0yLjEyLTUuMDctNC44Ni01LjQ4LTcuODNsMTEuMDktLjA3Yy40MiwxLjIxLDEuMjQsMi4xNywyLjQsMi44MiwxLjQzLjgsMi45Ni44OSwzLjU1Ljg5LDEuMjYsMCwzLjEzLS40LDQuMjQtMS41My42LS42MS44OS0xLjMzLjg4LTIuMTUtLjA0LTIuODEtMi4zNC0zLjM2LTcuODgtNC43LTExLjU0LTIuNzgtMTMuMS02LjgyLTEzLjEtMTAuMzlzMS41Ni02LjM3LDQuNjQtOC40NmMyLjk1LTIsNi44Mi0zLjA2LDExLjIyLTMuMDZNNTkuNiw5MC4zOWMtNC44NiwwLTguOTEsMS4yMy0xMS45MiwzLjI4LTMuMzEsMi4yNS01LjE4LDUuNDQtNS4xOCw5LjUsMCw1Ljc2LDQuMiw5LjIzLDE0LjA2LDExLjYsNS43NiwxLjM5LDYuOSwxLjgxLDYuOTIsMy41LDAsLjQ4LS4xNi44OS0uNTIsMS4yNS0uNzkuOC0yLjI1LDEuMTYtMy4zNSwxLjE2LS40OSwwLTEuNzYtLjA3LTIuOTQtLjczLTEuMTUtLjY0LTEuODMtMS42NS0yLjAzLTIuOTlsLTEzLjQuMDljMCwzLjg3LDIuMTcsNy40Niw2LjEyLDEwLjExLDMuNDMsMi4zLDcuOTEsMy42NywxMS45OSwzLjY3LDguOTIsMCwxOC41Mi00LjMxLDE4LjUyLTEzLjc4LDAtNy4yNi02Ljg5LTEwLjE5LTktMTAuOTEtMi4wNC0uNy00LjcyLTEuMjYtNy4wOC0xLjc2LTEuNzItLjM2LTMuMzQtLjctNC41My0xLjA1LS44OS0uMjYtMS4zOS0uODktMS4zOS0xLjc0LDAtMi4xNywyLjU3LTIuNCwzLjY3LTIuNCwyLjI5LDAsNC4yMiwxLjY1LDQuMjIsMy42MWgxMy4wMmMwLTguNTMtOC45LTEyLjQxLTE3LjE2LTEyLjQxIi8+CiAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTk4LjI5LDkxLjY3YzUuMzUsMCwxMC4wMSwxLjU0LDEyLjc5LDQuMjQsMi40NiwyLjM4LDQuMDUsNS43MSw0LjcyLDkuOTJoLTExLjMzYy0xLjA2LTMuODQtMy43My01LjIyLTUuOTUtNS4yMi01LjEzLDAtNi40OSw2LjU3LTYuNDksMTAuMDRzMS4zNiwxMC4wNCw2LjQ5LDEwLjA0YzEuMDksMCw0LjY0LS4zOSw1Ljk1LTUuMjJoMTEuMzNjLS42OCw0LjItMi4yNiw3LjU0LTQuNzIsOS45Mi0yLjc4LDIuNjktNy40Nyw0LjI0LTEyLjg2LDQuMjRzLTkuNjEtMS43Ni0xMy4wNC01LjU0Yy0zLjA1LTMuMzYtNC43My04LjEzLTQuNzMtMTMuNDNzMS42OC0xMC4wNyw0LjczLTEzLjQzYzMuNDMtMy43OCw3LjYtNS41NCwxMy4xMS01LjU0TTk4LjI5LDkwLjQyYy02LjA1LDAtMTAuNSwyLjA2LTE0LjAzLDUuOTUtMy4yNiwzLjU5LTUuMDYsOC42Ni01LjA2LDE0LjI3czEuOCwxMC42OCw1LjA2LDE0LjI3YzMuNTQsMy44OSw3LjkxLDUuOTUsMTMuOTcsNS45NSw1LjUxLDAsMTAuNTktMS41NCwxMy43My00LjU5LDIuODEtMi43Miw0LjU2LTYuNTUsNS4yLTExLjM4bC4wOS0uNjhoLTEzLjc1bC0uMTEuNDhjLS44MiwzLjYxLTMuMDIsNC43NS00Ljg2LDQuNzUtNC4zLDAtNS4yNC02LjEyLTUuMjQtOC43OXMuOTQtOC43OSw1LjI0LTguNzljMS43OSwwLDQuMDQsMS4xNCw0Ljg2LDQuNzVsLjExLjQ4aDEzLjc1bC0uMDktLjY4Yy0uNjQtNC44My0yLjM5LTguNjYtNS4yLTExLjM4LTMuMTQtMy4wNC04LjE2LTQuNTktMTMuNjYtNC41OSIvPgo8L3N2Zz4=", // base64-encoded logo
-    dotsOptions: {
-      color: "#000000",
-      type: "rounded"
-    },
-    backgroundOptions: {
-      color: "#ffffff",
-    },
-    imageOptions: {
-      crossOrigin: "anonymous",
-      margin: 20
-    }
-  });
+  const { url, logoUrl } = req.body;
 
-  const svgString = await qrCode.getRawData("svg");
-  
-  res.setHeader('Content-Type', 'image/svg+xml');
-  res.send(svgString);
+  try {
+    // Fetch SVG content
+    const svgResponse = await axios.get(logoUrl);
+    const svgContent = svgResponse.data;
+
+    // Convert SVG to data URL
+    const dataUrl = svgToDataURL(svgContent);
+
+    // Generate QR code with logo
+    const qrCodeDataURL = await QRCode.toDataURL(url, {
+      errorCorrectionLevel: 'H',
+      margin: 1,
+      color: {
+        dark: '#000000',
+        light: '#ffffff'
+      },
+      width: 300,
+      logo: {
+        src: dataUrl,
+        width: 50,
+        height: 50
+      }
+    });
+
+    res.send(qrCodeDataURL);
+  } catch (error) {
+    console.error('Error generating QR code:', error);
+    res.status(500).send('Error generating QR code');
+  }
 });
 
 app.listen(port, () => {
