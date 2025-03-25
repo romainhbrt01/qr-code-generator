@@ -1,12 +1,19 @@
 const express = require('express');
 const QRCode = require('qrcode');
-const svgToDataURL = require('svg-to-dataurl');
 const axios = require('axios');
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
+
+// Custom SVG to DataURL converter
+function svgToDataURL(svgString) {
+  const encodedSVG = encodeURIComponent(svgString)
+    .replace(/'/g, '%27')
+    .replace(/"/g, '%22');
+  return `data:image/svg+xml,${encodedSVG}`;
+}
 
 app.post('/generate-qr', async (req, res) => {
   const { url, logoUrl } = req.body;
@@ -15,9 +22,6 @@ app.post('/generate-qr', async (req, res) => {
     // Fetch SVG content
     const svgResponse = await axios.get(logoUrl);
     const svgContent = svgResponse.data;
-
-    // Convert SVG to data URL
-    const dataUrl = svgToDataURL(svgContent);
 
     // Generate QR code with logo
     const qrCodeDataURL = await QRCode.toDataURL(url, {
@@ -29,7 +33,7 @@ app.post('/generate-qr', async (req, res) => {
       },
       width: 300,
       logo: {
-        src: dataUrl,
+        src: svgToDataURL(svgContent),
         width: 50,
         height: 50
       }
