@@ -1,51 +1,78 @@
 const express = require('express');
-const QRCode = require('qrcode');
-const axios = require('axios');
-
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
-app.use(express.json());
+app.get('/', (req, res) => {
+  res.send('QR Code Generator API');
+});
 
-// Custom SVG to DataURL converter
-function svgToDataURL(svgString) {
-  const encodedSVG = encodeURIComponent(svgString)
-    .replace(/'/g, '%27')
-    .replace(/"/g, '%22');
-  return `data:image/svg+xml,${encodedSVG}`;
-}
-
-app.post('/generate-qr', async (req, res) => {
-  const { url, logoUrl } = req.body;
-
+app.get('/generate', async (req, res) => {
   try {
-    // Fetch SVG content
-    const svgResponse = await axios.get(logoUrl);
-    const svgContent = svgResponse.data;
+    const { JSDOM } = require('jsdom');
+    const { QRCodeStyling } = require('qr-code-styling/lib/qr-code-styling.common.js');
+    
+    const text = req.query.text;
+    const centerEmptyPercent = parseInt(req.query.centerEmpty) || 20; // Default 20% empty center
+    const dark = req.query.dark || '#000000';
+    const light = req.query.light || '#ffffff';
+    const size = parseInt(req.query.size) || 300;
 
-    // Generate QR code with logo
-    const qrCodeDataURL = await QRCode.toDataURL(url, {
-      errorCorrectionLevel: 'H',
+    if (!text) {
+      return res.status(400).send('Missing "text" query parameter');
+    }
+
+    // Calculate center size based on percentage
+    const centerSize = Math.round(size * (centerEmptyPercent / 100));
+    // Calculate center position
+    const centerPosition = (size - centerSize) / 2;
+    
+    // Generate QR code with styling
+    const qrCode = new QRCodeStyling({
+      jsdom: JSDOM, // required for Node.js
+      nodeCanvas: require('canvas'), // required for Node.js
+      type: "svg",
+      width: size,
+      height: size,
+      data: text,
       margin: 1,
-      color: {
-        dark: '#000000',
-        light: '#ffffff'
+      qrOptions: {
+        errorCorrectionLevel: 'H'
       },
-      width: 300,
-      logo: {
-        src: svgToDataURL(svgContent),
-        width: 50,
-        height: 50
+      dotsOptions: {
+        type: 'rounded',
+        color: dark
+      },
+      backgroundOptions: {
+        color: light,
+      },
+      cornersSquareOptions: {
+        type: 'extra-rounded',
+        color: dark
+      },
+      cornersDotOptions: {
+        type: 'dot',
+        color: dark
       }
     });
-
-    res.send(qrCodeDataURL);
+    
+    // Get the SVG data
+    const svgBuffer = await qrCode.getRawData('svg');
+    const svgString = svgBuffer.toString();
+    
+    // Add a white rounded rectangle in the center
+    const svgWithCenter = svgString.replace('</svg>',
+      `<rect x="${centerPosition}" y="${centerPosition}" width="${centerSize}" height="${centerSize}" rx="${centerSize / 5}" ry="${centerSize / 5}" fill="${light}" /></svg>`
+    );
+    
+    // Set response headers and send
+    res.type('svg');
+    res.send(Buffer.from(svgWithCenter));
   } catch (error) {
-    console.error('Error generating QR code:', error);
-    res.status(500).send('Error generating QR code');
+    console.error(error);
+    res.status(500).send('Error generating QR code: ' + error.message);
   }
 });
 
 app.listen(port, () => {
-  console.log(`QR code generator app listening at http://localhost:${port}`);
+  console.log(`Server running on port ${port}`);
 });
