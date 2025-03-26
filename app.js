@@ -1,42 +1,40 @@
 const express = require('express');
+const { QRCodeStyling } = require('qr-code-styling');
+const { JSDOM } = require('jsdom');
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Configure JSDOM for Node.js environment
+const dom = new JSDOM();
+global.document = dom.window.document;
+global.Image = dom.window.Image;
 
 app.get('/', (req, res) => {
   res.send('QR Code Generator API');
 });
 
 app.get('/generate', async (req, res) => {
+  const text = req.query.text;
+  const dark = req.query.dark || '#000000';
+  const light = req.query.light || '#ffffff';
+  const size = parseInt(req.query.size) || 300;
+  const emptyCenterSize = parseFloat(req.query.centerSize) || 0.3; // 30% of QR size
+
+  if (!text) return res.status(400).send('Missing "text" parameter');
+
   try {
-    const { JSDOM } = require('jsdom');
-    const { QRCodeStyling } = require('qr-code-styling/lib/qr-code-styling.common.js');
-    
-    const text = req.query.text;
-    const centerEmptyPercent = parseInt(req.query.centerEmpty) || 20; // Default 20% empty center
-    const dark = req.query.dark || '#000000';
-    const light = req.query.light || '#ffffff';
-    const size = parseInt(req.query.size) || 300;
-
-    if (!text) {
-      return res.status(400).send('Missing "text" query parameter');
-    }
-
-    // Calculate center size based on percentage
-    const centerSize = Math.round(size * (centerEmptyPercent / 100));
-    // Calculate center position
-    const centerPosition = (size - centerSize) / 2;
-    
-    // Generate QR code with styling
     const qrCode = new QRCodeStyling({
-      jsdom: JSDOM, // required for Node.js
-      nodeCanvas: require('canvas'), // required for Node.js
-      type: "svg",
       width: size,
       height: size,
       data: text,
-      margin: 1,
+      margin: 10,
       qrOptions: {
         errorCorrectionLevel: 'H'
+      },
+      imageOptions: {
+        hideBackgroundDots: true,
+        imageSize: emptyCenterSize,
+        margin: 5
       },
       dotsOptions: {
         type: 'rounded',
@@ -54,24 +52,22 @@ app.get('/generate', async (req, res) => {
         color: dark
       }
     });
+
+    // Generate PNG buffer
+    const buffer = await qrCode.getRawData('png');
     
-    // Get the SVG data
-    const svgBuffer = await qrCode.getRawData('svg');
-    const svgString = svgBuffer.toString();
-    
-    // Add a white rounded rectangle in the center
-    const svgWithCenter = svgString.replace('</svg>',
-      `<rect x="${centerPosition}" y="${centerPosition}" width="${centerSize}" height="${centerSize}" rx="${centerSize / 5}" ry="${centerSize / 5}" fill="${light}" /></svg>`
-    );
-    
-    // Set response headers and send
-    res.type('svg');
-    res.send(Buffer.from(svgWithCenter));
+    res.type('png');
+    res.send(buffer);
   } catch (error) {
     console.error(error);
     res.status(500).send('Error generating QR code: ' + error.message);
   }
 });
+
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
+
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
