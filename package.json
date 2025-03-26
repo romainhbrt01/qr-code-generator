@@ -8,7 +8,10 @@
   "dependencies": {
     "express": "^4.17.1",
     "qrcode": "^1.4.4",
-    "axios": "^0.21.1"
+    "axios": "^0.21.1",
+    "jsdom": "^22.1.0", // Add jsdom dependency
+    "canvas": "^2.11.0" // Optional, if needed for rendering QR codes in Node.js
   }
 }
+
 
