@@ -7,10 +7,9 @@
   },
   "dependencies": {
     "express": "^4.17.1",
-    "qrcode": "^1.4.4",
-    "axios": "^0.21.1",
-    "jsdom": "^22.1.0",
-    "canvas": "^2.11.0"
+    "qr-code-styling": "^1.6.0",
+    "canvas": "^2.11.0",
+    "jsdom": "^22.1.0"
   }
 }
 
