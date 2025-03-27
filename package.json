@@ -3,20 +3,14 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "build": "echo 'No build required' && exit 0",
-    "test": "echo 'No tests configured' && exit 0"
+    "start": "node app.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
+    "express": "^4.17.1",
     "qrcode": "^1.5.3",
-    "qr-code-styling": "^2.3.1",
-    "canvas": "^2.11.2"
-  },
-  "engines": {
-    "node": ">=20.0.0",
-    "npm": ">=10.0.0"
+    "canvas": "^2.11.0"
   }
 }
+
 
 
