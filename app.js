@@ -9,13 +9,19 @@ const port = process.env.PORT || 3000;
 if (typeof window === 'undefined') {
   global.document = {
     createElement: (tag) => {
-      if (tag === 'canvas') {
-        return createCanvas(100, 100);
-      }
+      if (tag === 'canvas') return createCanvas(100, 100);
       return { style: {} };
+    },
+    createElementNS: (namespace, tag) => { // Add this new method
+      return document.createElement(tag);
     }
   };
-  global.window = { devicePixelRatio: 1 };
+  
+  global.window = { 
+    devicePixelRatio: 1,
+    URL: { createObjectURL: () => {} } // Add missing URL polyfill
+  };
+  
   global.Image = class {
     constructor() {
       this.onload = null;
@@ -26,10 +32,8 @@ if (typeof window === 'undefined') {
         this.width = img.width;
         this.height = img.height;
         this._img = img;
-        if (this.onload) this.onload();
-      }).catch(err => {
-        if (this.onerror) this.onerror(err);
-      });
+        this.onload?.();
+      }).catch(err => this.onerror?.(err));
     }
   };
 }
@@ -75,33 +79,36 @@ app.get('/generate', async (req, res) => {
     const ctx = canvas.getContext('2d');
     
     // Generate styled QR code
-    const qrCode = new QRCodeStyling({
-      width: size,
-      height: size,
-      type: 'canvas',
-      data: text,
-      margin: 1,
-      qrOptions: {
-        errorCorrectionLevel: 'H'
-      },
-      dotsOptions: {
-        color: dark,
-        type: dotType
-      },
-      cornersSquareOptions: {
-        color: dark,
-        type: cornerSquareType,
-        size: cornerSquareSize
-      },
-      backgroundOptions: {
-        color: light
-      },
-      imageOptions: centerImageUrl ? {
-        source: centerImageUrl,
-        imageSize: 0.3,
-        margin: 5
-      } : undefined
-    });
+const qrCode = new QRCodeStyling({
+  width: size,
+  height: size,
+  type: 'canvas',
+  data: text,
+  margin: 1,
+  qrOptions: {
+    errorCorrectionLevel: 'H',
+    version: 5 // Force higher version for better error correction
+  },
+  dotsOptions: {
+    color: dark,
+    type: dotType
+  },
+  cornersSquareOptions: {
+    color: dark,
+    type: cornerSquareType,
+    size: cornerSquareSize
+  },
+  backgroundOptions: {
+    color: light,
+    round: 0.1 // Add background rounding
+  },
+  imageOptions: centerImageUrl ? {
+    source: centerImageUrl,
+    imageSize: 0.25, // Reduced from 0.3 for better scanning
+    margin: 8,
+    crossOrigin: 'anonymous' // Add CORS handling
+  } : undefined
+});
     
     // Render to canvas (adapter implementation)
     const tempCanvas = await QRCode.toCanvas(canvas, text, {
@@ -168,20 +175,29 @@ app.get('/generate', async (req, res) => {
     }
     
     // Add center image if needed
-    if (centerImageUrl) {
-      try {
-        const logo = await loadImage(centerImageUrl);
-        const logoSize = size * 0.2;
-        const logoX = (size - logoSize) / 2;
-        const logoY = (size - logoSize) / 2;
-        
-        ctx.fillStyle = light;
-        ctx.fillRect(logoX, logoY, logoSize, logoSize);
-        ctx.drawImage(logo, logoX, logoY, logoSize, logoSize);
-      } catch (logoError) {
-        console.error('Error loading logo:', logoError);
-      }
-    }
+if (centerImageUrl) {
+  try {
+    const logo = await loadImage(centerImageUrl);
+    const logoSize = size * 0.2;
+    const logoX = (size - logoSize) / 2;
+    const logoY = (size - logoSize) / 2;
+    
+    // Create transparent background for logo
+    ctx.clearRect(logoX, logoY, logoSize, logoSize);
+    
+    // Draw logo with rounded corners
+    ctx.save();
+    ctx.beginPath();
+    ctx.roundRect(logoX, logoY, logoSize, logoSize, 8);
+    ctx.clip();
+    ctx.drawImage(logo, logoX, logoY, logoSize, logoSize);
+    ctx.restore();
+  } catch (logoError) {
+    console.error('Error loading logo:', logoError);
+    // Fallback to empty center space
+    ctx.clearRect(size/2 - size*0.1, size/2 - size*0.1, size*0.2, size*0.2);
+  }
+}
     
     // Send the result
     const buffer = canvas.toBuffer('image/png');
