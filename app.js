@@ -1,12 +1,18 @@
 const express = require('express');
 const QRCode = require('qrcode');
+const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Serve static files (HTML/CSS/JS) from root directory
+app.use(express.static(path.join(__dirname)));
+
+// Route handler for root URL
 app.get('/', (req, res) => {
-  res.send('QR Code Generator API');
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// QR Code Generation API
 app.get('/generate', async (req, res) => {
   const text = req.query.text;
   const centerImageUrl = req.query.centerImageUrl;
