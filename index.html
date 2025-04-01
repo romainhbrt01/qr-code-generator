@@ -18,7 +18,7 @@
             const email = document.getElementById("email").value;
 
             // Replace with your Logic App's HTTP POST URL
-            const logicAppUrl = "YOUR_LOGIC_APP_POST_URL";
+            const logicAppUrl = "https://prod-169.westeurope.logic.azure.com:443/workflows/e53a57ed36824c9ba96437ae88e075f3/triggers/When_a_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_a_HTTP_request_is_received%2Frun&sv=1.0&sig=QFKq6PLQkGAujuyr8JkgZ3jkUN7WcjbwiZeGrf3YXzY";
 
             try {
                 const response = await fetch(logicAppUrl, {
