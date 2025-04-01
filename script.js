@@ -22,8 +22,12 @@ document.getElementById("emailForm").addEventListener("submit", async function(e
         alertDiv.className = `alert-box ${response.ok ? 'success' : 'error'}`;
         
         const message = response.ok 
-            ? `The business card for <strong>${email}</strong> has been successfully requested, you will shortly receive it by email`
-            : 'Error requesting the business card, please try again later and send an email to <a href="mailto:support@test.com">support@test.com</a>';
+            ? `<p>The business card for:</p>
+               <p class="email">${email}</p>
+               <p>has been successfully requested. You will shortly receive it by email.</p>`
+            : `<p>Error requesting the business card for:</p>
+               <p class="email">${email}</p>
+               <p>Please try again later or send an email to <a href="mailto:support@test.com">support@test.com</a>.</p>`;
 
         alertDiv.innerHTML = `
             ${message}
@@ -49,7 +53,9 @@ document.getElementById("emailForm").addEventListener("submit", async function(e
         const alertContainer = document.getElementById('alertContainer');
         alertContainer.innerHTML = `
             <div class="alert-box error">
-                Error requesting the business card, please try again later and send an email to <a href="mailto:support@test.com">support@test.com</a>
+                <p>Error requesting the business card for:</p>
+                <p class="email">${email}</p>
+                <p>Please try again later or send an email to <a href="mailto:support@test.com">support@test.com</a>.</p>
                 <span class="close-btn">&times;</span>
             </div>
         `;
