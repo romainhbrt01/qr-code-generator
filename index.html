@@ -2,9 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trigger Logic App</title>
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="index.css">
 </head>
 <body>
+    <!-- Base64 SVG Logo -->
+    <img class="logo" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiNFNEQyQjIiIHJ4PSIxNSIvPjwvc3ZnPg==" alt="Logo">
+
+    <!-- Form Section -->
     <h2>Enter Your Email</h2>
     <form id="emailForm">
         <label for="email">Email Address:</label>
@@ -12,6 +19,7 @@
         <button type="submit">Submit</button>
     </form>
 
+    <!-- JavaScript Section -->
     <script>
         document.getElementById("emailForm").addEventListener("submit", async function(event) {
             event.preventDefault();
