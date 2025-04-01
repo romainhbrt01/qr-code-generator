@@ -15,22 +15,23 @@
     margin: 10px 0;
     border-radius: 8px;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column; /* Stack content vertically */
     font-size: 16px;
     font-family: Arial, sans-serif;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     animation: fadeIn 0.3s ease-out;
 }
 
-/* Success Alert */
+.alert-box .email {
+    font-weight: bold; /* Highlight the email */
+}
+
 .success {
     background-color: #DFF6DD; /* Light green */
     border-left: 8px solid #4CAF50; /* Dark green border */
     color: #2E7D32; /* Dark green text */
 }
 
-/* Error Alert */
 .error {
     background-color: #FFEBEE; /* Light red */
     border-left: 8px solid #F44336; /* Dark red border */
@@ -40,7 +41,8 @@
 /* Close Button Styles */
 .close-btn {
     cursor: pointer;
-    margin-left: 15px;
+    margin-top: 10px;
+    align-self: flex-end; /* Align close button to the right */
     font-size: 20px;
     font-weight: bold;
     color: inherit; /* Matches text color of alert box */
