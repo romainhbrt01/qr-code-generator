@@ -10,14 +10,14 @@ body {
     height: 100vh;
 }
 
-/* Container for the form */
-form {
+/* Center container styling */
+.container {
+    text-align: center;
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     padding: 20px;
     width: 300px;
-    text-align: center;
 }
 
 /* Logo styling */
@@ -68,7 +68,7 @@ button:hover {
 
 /* Responsive design for smaller screens */
 @media (max-width: 480px) {
-    form {
+    .container {
         width: calc(100% - 40px);
         padding: 15px;
     }
