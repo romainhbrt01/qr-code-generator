@@ -24,7 +24,7 @@ document.getElementById("emailForm").addEventListener("submit", async function(e
         const message = response.ok 
             ? `<p>The business card for:</p>
                <p class="email">${email}</p>
-               <p>has been successfully requested. You will shortly receive it by email.</p>`
+               <p>has been successfully requested, you will shortly receive it by email.</p>`
             : `<p>Error requesting the business card for:</p>
                <p class="email">${email}</p>
                <p>Please try again later or send an email to <a href="mailto:support@test.com">support@test.com</a>.</p>`;
