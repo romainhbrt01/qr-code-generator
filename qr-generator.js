@@ -11,75 +11,72 @@ const COMPANY_WEBSITES = {
     medlog: "medlog.com"
 };
 
-// Initialize the form and set default values
+// Initialize on page load
 document.addEventListener("DOMContentLoaded", () => {
-    // Set the default website field value
+    // Set default website
     document.getElementById("website").value = COMPANY_WEBSITES.msc;
-
-    // Display a default QR code on load
-    updateQRCode(true);
-
-    // Add event listeners to radio buttons to update the website field and QR code
-    document.querySelectorAll('input[name="company"]').forEach((radio) => {
-        radio.addEventListener("change", function () {
+    
+    // Set up company radio button event listeners
+    document.querySelectorAll('input[name="company"]').forEach(radio => {
+        radio.addEventListener("change", function() {
             const company = this.value;
             document.getElementById("website").value = COMPANY_WEBSITES[company];
-            updateQRCode(false); // Update QR code based on selected company
+            updateLogoDisplay();
         });
     });
+    
+    // Generate default QR code
+    updateQRDisplay(true);
 });
 
 // Generate QR code based on form data
 function generateQR() {
-    updateQRCode(false);
+    updateQRDisplay(false);
 }
 
-// Reset the form and display the default QR code
+// Reset form and QR code
 function resetForm() {
     document.getElementById("vcardForm").reset();
     document.getElementById("website").value = COMPANY_WEBSITES.msc;
     document.querySelector('input[name="company"][value="msc"]').checked = true;
-    updateQRCode(true);
+    updateQRDisplay(true);
 }
 
-// Update the QR code and logo overlay
-function updateQRCode(useDefault) {
+// Update QR code display
+function updateQRDisplay(useDefault) {
     const company = document.querySelector('input[name="company"]:checked').value;
-    let apiUrl;
-
+    
+    // Generate vCard QR code URL
+    let qrApiUrl;
     if (useDefault) {
-        // Default demo data for MEDLOG
-        apiUrl =
-            "https://qr-code-generator-romain-eghpcgd2drhje2bw.canadacentral-01.azurewebsites.net/generate?text=BEGIN%3AVCARD%0AVERSION%3A3.0%0AFN%3AJohn%20Doe%0AN%3ADoe%3BJohn%3B%3B%3B%20EMAIL%20john.doe@example.com";
-        document.getElementById("companyLogo").src = ""; // No logo for MEDLOG by default
-        document.getElementById("companyLogo").style.display = "none";
+        // Default demo data
+        qrApiUrl = "https://qr-code-generator-romain-eghpcgd2drhje2bw.canadacentral-01.azurewebsites.net/generate?text=BEGIN%3AVCARD%0AVERSION%3A3.0%0AFN%3AJohn%20Doe%0AN%3ADoe%3BJohn%3B%3B%3B%0AEMAIL%3Ajohn.doe%40example.com%0ATEL%3A%2B1234567890%0AURL%3Awww.example.com%0AEND%3AVCARD";
     } else {
-        const vCardData = buildVCard();
+        const vCardData = createVCardData();
         const encodedData = encodeURIComponent(vCardData);
-
+        
         if (company === "medlog") {
-            apiUrl = `https://qr-code-generator-romain-eghpcgd2drhje2bw.canadacentral-01.azurewebsites.net/generate?text=${encodedData}`;
-            document.getElementById("companyLogo").src = ""; // No logo for MEDLOG
-            document.getElementById("companyLogo").style.display = "none";
+            qrApiUrl = `https://qr-code-generator-romain-eghpcgd2drhje2bw.canadacentral-01.azurewebsites.net/generate?text=${encodedData}`;
         } else {
-            apiUrl = `https://qr-code-generator-romain-v2-dtezhae4hjbpeyd2.westeurope-01.azurewebsites.net/generate?text=${encodedData}`;
-            document.getElementById("companyLogo").src = COMPANY_LOGOS[company]; // Set logo for MSC or TIL
-            document.getElementById("companyLogo").style.display = "block";
+            qrApiUrl = `https://qr-code-generator-romain-v2-dtezhae4hjbpeyd2.westeurope-01.azurewebsites.net/generate?text=${encodedData}`;
         }
     }
-
-    // Update QR code image source
-    document.getElementById("qrImage").src = apiUrl;
+    
+    // Update QR image
+    document.getElementById("qrImage").src = qrApiUrl;
+    
+    // Update logo display
+    updateLogoDisplay();
 }
 
-// Build vCard data from form inputs
-function buildVCard() {
+// Create vCard data from form inputs
+function createVCardData() {
     const firstName = document.getElementById("firstName").value;
     const lastName = document.getElementById("lastName").value;
     const email = document.getElementById("email").value;
     const phone = document.getElementById("phone").value;
     const website = document.getElementById("website").value;
-
+    
     return [
         "BEGIN:VCARD",
         "VERSION:3.0",
@@ -88,6 +85,26 @@ function buildVCard() {
         `EMAIL:${email}`,
         `TEL:${phone}`,
         `URL:${website}`,
-        "END:VCARD",
+        "END:VCARD"
     ].join("\n");
+}
+
+// Update logo in QR code
+function updateLogoDisplay() {
+    const company = document.querySelector('input[name="company"]:checked').value;
+    const logoContainer = document.getElementById("logoContainer");
+    
+    // Clear previous logo
+    logoContainer.innerHTML = "";
+    
+    // Only show logo for MSC and TIL
+    if (company === "msc" || company === "til") {
+        const logoImg = document.createElement("img");
+        logoImg.src = COMPANY_LOGOS[company];
+        logoImg.alt = company.toUpperCase() + " Logo";
+        logoContainer.appendChild(logoImg);
+        logoContainer.style.display = "flex";
+    } else {
+        logoContainer.style.display = "none";
+    }
 }
