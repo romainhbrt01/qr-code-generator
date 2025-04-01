@@ -19,17 +19,17 @@
                         <label class="radio-option">
                             <input type="radio" name="company" value="msc" checked>
                             <span class="radio-custom"></span>
-                            <span class="company-name">MSC CARGO</span>                            
+                            MSC CARGO
                         </label>
                         <label class="radio-option">
                             <input type="radio" name="company" value="til">
                             <span class="radio-custom"></span>
-                            <span class="company-name">TIL</span>                           
+                            TIL
                         </label>
                         <label class="radio-option">
                             <input type="radio" name="company" value="medlog">
                             <span class="radio-custom"></span>
-                            <span class="company-name">MEDLOG</span>
+                            MEDLOG
                         </label>
                     </div>
                 </div>
@@ -54,7 +54,8 @@
                     <label for="website">Website:</label>
                     <input type="text" id="website" readonly>
                 </div>
-                
+
+                <!-- Buttons -->
                 <div class="button-group">
                     <button type="button" onclick="generateQR()">GENERATE</button>
                     <button type="button" onclick="resetForm()">RESET</button>
@@ -65,12 +66,20 @@
         <!-- QR Display Section -->
         <div class="qr-section">
             <h2>QR Code</h2>
+            <!-- Wrapper for QR Code and Logo Overlay -->
             <div id="qrContainer">
-                <img id="qrImage" alt="QR Code">
+                <div class="qr-wrapper">
+                    <!-- QR Code -->
+                    <img id="qrImage" alt="QR Code">
+
+                    <!-- Logo Overlay -->
+                    <img id="companyLogo" class="logo-overlay" alt="">
+                </div>
             </div>
         </div>
     </div>
 
-    <script src="qr-generator.js"></script>
+    <!-- JavaScript -->
+    <script src="./qr-generator.js"></script>
 </body>
 </html>
