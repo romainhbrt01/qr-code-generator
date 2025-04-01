@@ -66,6 +66,18 @@ button:hover {
     background-color: #e5d3a1; /* Slightly darker shade for hover effect */
 }
 
+/* Back button */
+.back-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #F4E4B2;
+    color: #333;
+    text-decoration: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+}
+
 /* Responsive design for smaller screens */
 @media (max-width: 480px) {
     .container {
