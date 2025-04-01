@@ -47,7 +47,7 @@ function generateQR() {
     const encodedData = encodeURIComponent(vCardData);
     
     if (company === 'medlog') {
-        apiUrl = `https://qr-code-generator-romain-eghpcgd2drhje2bw.canadacentral-01.azurewebsites.net/generate?Text=${encodedData}`;
+        apiUrl = `https://qr-code-generator-romain-eghpcgd2drhje2bw.canadacentral-01.azurewebsites.net/generate?text=${encodedData}`;
     } else {
         apiUrl = `https://qr-code-generator-romain-v2-dtezhae4hjbpeyd2.westeurope-01.azurewebsites.net/generate?text=${encodedData}&logo=${encodeURIComponent(COMPANY_LOGOS[company])}`;
     }
