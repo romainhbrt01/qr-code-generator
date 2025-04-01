@@ -1,4 +1,4 @@
-/* General body styling */
+/* General styles */
 body {
     font-family: Arial, sans-serif;
     background-color: #F4E4B2;
@@ -10,81 +10,137 @@ body {
     align-items: center;
 }
 
-/* Container styling */
 .container {
     background-color: white;
-    border-radius: 15px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     padding: 30px;
     width: 90%;
-    max-width: 1200px;
+    max-width: 1000px;
     display: flex;
     gap: 40px;
 }
 
-/* Form section styling */
+h2 {
+    color: #333;
+    border-bottom: 1px solid #F4E4B2;
+    padding-bottom: 10px;
+    margin-top: 0;
+}
+
+/* Form styles */
 .form-section, .qr-section {
     flex: 1;
 }
 
-h2 {
-    color: #333;
-    border-bottom: 3px solid #F4E4B2;
-    padding-bottom: 10px;
-}
-
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
+    font-weight: bold;
 }
 
-input {
+input[type="text"],
+input[type="email"],
+input[type="tel"] {
     width: 100%;
-    padding: 12px;
-    border-radius: 8px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
 }
 
-/* Radio buttons */
-.radio-group {
+.company-selection {
     display: flex;
     gap: 15px;
+    margin-bottom: 20px;
 }
 
-.radio-option {
-    display: flex;
-    align-items: center;
-}
-
-.radio-custom {
-    width: 20px;
-    height: 20px;
-}
-
-/* Buttons */
 .button-group {
     display: flex;
+    gap: 10px;
+    margin-top: 20px;
 }
 
 button {
-    padding: 10px 20px;
+    padding: 8px 20px;
+    background-color: #F4E4B2;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
 }
 
-/* QR Code styling */
+button:hover {
+    background-color: #e5d3a1;
+}
+
+/* QR Code styles */
 .qr-section {
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.qr-wrapper {
-    position: relative; /* For logo overlay */
+#qrContainer {
+    position: relative;
+    margin-top: 20px;
+    width: 300px;
+    height: 300px;
 }
 
 #qrImage {
-    max-width: 300px; /* QR code size */
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 
-.logo-overlay {
-   **position absolute
+#logoContainer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px; /* Smaller logo size */
+    height: 60px;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+#logoContainer img {
+    max-width: 90%;
+    max-height: 90%;
+}
+
+/* Back button */
+.back-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #F4E4B2;
+    color: #333;
+    text-decoration: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+}
+
+.back-button:hover {
+    background-color: #e5d3a1;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+    
+    #qrContainer {
+        width: 250px;
+        height: 250px;
+    }
+}
