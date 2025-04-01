@@ -24,7 +24,7 @@ function generateQR() {
     // Generate QR Code
     const qrImage = document.getElementById('qrImage');
     const qrContainer = document.getElementById('qrContainer');
-    const apiUrl = `https://qr-code-generator-romain-eghpcgd2drhje2bw.canadacentral-01.azurewebsites.net/generate?Text=${encodedData}`;
+    const apiUrl = `https://qr-code-generator-romain-eghpcgd2drhje2bw.canadacentral-01.azurewebsites.net/generate?text=${encodedData}`;
 
     qrImage.src = apiUrl;
     qrContainer.classList.remove('hidden');
