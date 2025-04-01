@@ -1,0 +1,43 @@
+/* Alert Styles */
+#alertContainer {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: 80%;
+    max-width: 600px;
+}
+
+.alert-box {
+    padding: 15px 20px;
+    margin: 10px 0;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: slideIn 0.3s ease-out;
+}
+
+.success {
+    background-color: #F4E4B2; /* Light yellow */
+    border: 1px solid #4CAF50; /* Green border */
+    color: #4CAF50; /* Green text */
+}
+
+.error {
+    background-color: #FFEBEE; /* Light red */
+    border: 1px solid #F44336; /* Red border */
+    color: #F44336; /* Red text */
+}
+
+.close-btn {
+    cursor: pointer;
+    margin-left: 15px;
+    font-size: 1.2em;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
