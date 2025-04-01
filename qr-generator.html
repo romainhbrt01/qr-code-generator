@@ -7,11 +7,27 @@
     <link rel="stylesheet" href="qr-generator.css">
 </head>
 <body>
+    <a href="https://qr-code-generator-romain-eghpcgd2drhje2bw.canadacentral-01.azurewebsites.net/" class="back-button">Back to Main</a>
+    
     <div class="container">
         <!-- Form Section -->
         <div class="form-section">
             <h2 style="background-color: #f4e4b2;">Create vCard</h2>
             <form id="vcardForm">
+                <div class="company-selection">
+                    <label>Company:</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="company" value="msc" checked> MSC CARGO
+                        </label>
+                        <label>
+                            <input type="radio" name="company" value="til"> TIL
+                        </label>
+                        <label>
+                            <input type="radio" name="company" value="medlog"> MEDLOG
+                        </label>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label for="firstName">First Name:</label>
                     <input type="text" id="firstName" required>
@@ -29,8 +45,8 @@
                     <input type="tel" id="phone" required>
                 </div>
                 <div class="form-group">
-                    <label for="country">Country:</label>
-                    <input type="text" id="country" required>
+                    <label for="website">Website:</label>
+                    <input type="text" id="website" readonly>
                 </div>
                 <div class="button-group">
                     <button type="button" onclick="generateQR()">GENERATE</button>
