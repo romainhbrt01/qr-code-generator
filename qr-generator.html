@@ -7,31 +7,15 @@
     <link rel="stylesheet" href="qr-generator.css">
 </head>
 <body>
-    <a href="https://qr-code-generator-romain-eghpcgd2drhje2bw.canadacentral-01.azurewebsites.net/" class="back-button">← Back to Main</a>
-    
     <div class="container">
         <!-- Form Section -->
         <div class="form-section">
             <h2>Create vCard</h2>
             <form id="vcardForm">
                 <div class="company-selection">
-                    <div class="radio-group">
-                        <label class="radio-option">
-                            <input type="radio" name="company" value="msc" checked>
-                            <span class="radio-custom"></span>
-                            MSC
-                        </label>
-                        <label class="radio-option">
-                            <input type="radio" name="company" value="til">
-                            <span class="radio-custom"></span>
-                            TIL
-                        </label>
-                        <label class="radio-option">
-                            <input type="radio" name="company" value="medlog">
-                            <span class="radio-custom"></span>
-                            MEDLOG
-                        </label>
-                    </div>
+                    <label><input type="radio" name="company" value="msc" checked> MSC</label>
+                    <label><input type="radio" name="company" value="til"> TIL</label>
+                    <label><input type="radio" name="company" value="medlog"> MEDLOG</label>
                 </div>
                 
                 <div class="form-group">
@@ -54,11 +38,10 @@
                     <label for="website">Website:</label>
                     <input type="text" id="website" readonly>
                 </div>
-
-                <!-- Buttons -->
+                
                 <div class="button-group">
-                    <button type="button" onclick="generateQR()">GENERATE</button>
-                    <button type="button" onclick="resetForm()">RESET</button>
+                    <button type="button" class="generate-btn" onclick="generateQR()">GENERATE</button>
+                    <button type="button" class="reset-btn" onclick="resetForm()">RESET</button>
                 </div>
             </form>
         </div>
@@ -66,21 +49,17 @@
         <!-- QR Display Section -->
         <div class="qr-section">
             <h2>QR Code</h2>
-            <!-- Wrapper for QR Code and Logo Overlay -->
             <div id="qrContainer">
-                <div class="qr-wrapper">
-                    <!-- QR Code -->
-                    <img id="qrImage" alt="QR Code">
-
-                    <!-- Logo Overlay -->
-                    <img id="companyLogo" class="logo-overlay" alt="">
+                <img id="qrImage" alt="QR Code">
+                <div id="logoContainer">
+                    <!-- Company logo will be inserted here by JavaScript -->
                 </div>
             </div>
         </div>
     </div>
+    
+    <a href="https://qr-code-generator-romain-eghpcgd2drhje2bw.canadacentral-01.azurewebsites.net/" class="back-button">← Back to Main</a>
 
-    <!-- JavaScript -->
-    <script src="./qr-generator.js"></script>
+    <script src="qr-generator.js"></script>
 </body>
 </html>
-
