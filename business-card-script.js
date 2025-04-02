@@ -13,13 +13,13 @@ const COMPANY_DATA = {
     }
 };
 
+// Initialize form and preview
 document.addEventListener("DOMContentLoaded", () => {
     initializeForm();
     generateBusinessCard();
 });
 
 function initializeForm() {
-    // Set default company
     document.getElementById('company').addEventListener('change', updateCompanyDetails);
     document.querySelectorAll('input, textarea').forEach(element => {
         element.addEventListener('input', generateBusinessCard);
@@ -35,67 +35,55 @@ function updateCompanyDetails() {
 function generateBusinessCard() {
     // Get form values
     const company = document.getElementById('company').value;
-    const firstName = document.getElementById('firstName').value || "John";
-    const lastName = document.getElementById('lastName').value || "Doe";
-    const jobTitle = document.getElementById('jobTitle').value || "Position";
-    const companyName = document.getElementById('companyName').value || "Company Name";
-    const address = document.getElementById('companyAddress').value || "Company Address";
-    const phone = document.getElementById('phone').value || "+123 456 789";
-    const mobile = document.getElementById('mobile').value || "+987 654 321";
-    const email = document.getElementById('email').value || "email@company.com";
-    const country = document.getElementById('country').value || "Country";
+    const addressLines = document.getElementById('companyAddress').value.split('\n');
+    
+    // Update Recto elements
+    document.getElementById('previewFirstName').textContent = document.getElementById('firstName').value;
+    document.getElementById('previewLastName').textContent = document.getElementById('lastName').value;
+    document.getElementById('previewCompanyName').textContent = COMPANY_DATA[company].displayName;
+    
+    // Update Address
+    document.getElementById('previewAddressRoad').textContent = addressLines[0] || '';
+    document.getElementById('previewAddressZipCity').textContent = addressLines[1] || '';
+    document.getElementById('previewAddressCountry').textContent = addressLines[2] || '';
 
-    // Update preview elements
-    document.getElementById('previewName').textContent = `${firstName} ${lastName}`;
-    document.getElementById('previewJobTitle').textContent = jobTitle;
-    document.getElementById('previewCompanyName').textContent = companyName.toUpperCase();
-    document.getElementById('previewAddress').textContent = address;
-    document.getElementById('previewPhone').textContent = `T. ${phone}`;
-    document.getElementById('previewMobile').textContent = `M. ${mobile}`;
-    document.getElementById('previewEmail').textContent = email;
-    document.getElementById('previewCountry').textContent = country;
+    // Update Contact Info
+    document.getElementById('previewPhone').textContent = `T. ${document.getElementById('phone').value}`;
+    document.getElementById('previewMobile').textContent = `M. ${document.getElementById('mobile').value}`;
+    document.getElementById('previewWebsite').textContent = COMPANY_DATA[company].website;
 
-    // Update company logo
-    const logoImg = document.getElementById('previewLogo');
-    logoImg.src = COMPANY_DATA[company].logo;
-    logoImg.style.display = company === 'medlog' ? 'none' : 'block';
+    // Update Logos
+    const mainLogo = document.getElementById('previewLogo');
+    const qrLogo = document.getElementById('qrLogoOverlay');
+    mainLogo.src = COMPANY_DATA[company].logo;
+    qrLogo.src = COMPANY_DATA[company].logo;
+    qrLogo.style.display = company === 'medlog' ? 'none' : 'block';
 
     // Generate QR Code
-    generateQRCode(company, {
-        firstName,
-        lastName,
-        jobTitle,
-        company: document.getElementById('company').options[document.getElementById('company').selectedIndex].text,
-        phone,
-        mobile,
-        email,
-        website: COMPANY_DATA[company].website,
-        address,
-        country
-    });
+    generateQRCode(company);
 }
 
-function generateQRCode(company, details) {
+function generateQRCode(company) {
     const vCardData = [
-        "BEGIN:VCARD",
-        "VERSION:3.0",
-        `FN:${details.firstName} ${details.lastName}`,
-        `N:${details.lastName};${details.firstName};;;`,
-        `TITLE:${details.jobTitle}`,
-        `ORG:${details.company}`,
-        `TEL;WORK:${details.phone}`,
-        `TEL;CELL:${details.mobile}`,
-        `EMAIL:${details.email}`,
-        `URL:${details.website}`,
-        `ADR:;;${details.address}`,
-        `NOTE:${details.country}`,
-        "END:VCARD"
+        'BEGIN:VCARD',
+        'VERSION:3.0',
+        `FN:${document.getElementById('firstName').value} ${document.getElementById('lastName').value}`,
+        `N:${document.getElementById('lastName').value};${document.getElementById('firstName').value};;;`,
+        `TITLE:${document.getElementById('jobTitle').value}`,
+        `ORG:${COMPANY_DATA[company].displayName}`,
+        `TEL:${document.getElementById('phone').value}`,
+        `TEL;CELL:${document.getElementById('mobile').value}`,
+        `EMAIL:${document.getElementById('email').value}`,
+        `URL:${COMPANY_DATA[company].website}`,
+        `ADR:;;${document.getElementById('companyAddress').value}`,
+        `NOTE:${document.getElementById('country').value}`,
+        'END:VCARD'
     ].join('\n');
 
     const encodedData = encodeURIComponent(vCardData);
     const qrCode = document.getElementById('previewQrCode');
     
-    if (company === 'medlog') {
+    if(company === 'medlog') {
         qrCode.src = `https://qr-code-generator-romain-eghpcgd2drhje2bw.canadacentral-01.azurewebsites.net/generate?text=${encodedData}`;
     } else {
         qrCode.src = `https://qr-code-generator-romain-v2-dtezhae4hjbpeyd2.westeurope-01.azurewebsites.net/generate?text=${encodedData}&logo=${encodeURIComponent(COMPANY_DATA[company].logo)}`;
@@ -104,37 +92,23 @@ function generateQRCode(company, details) {
 
 async function downloadCard() {
     const pdf = new jspdf.jsPDF({
-        orientation: "landscape",
         unit: "in",
-        format: [6.75, 4.25] // Two cards side-by-side
+        format: [3.375, 4.25]
     });
 
-    // Capture recto (front)
+    // Capture cards
     const recto = await html2canvas(document.querySelector('.recto'));
-    const rectoImg = recto.toDataURL('image/png');
-    
-    // Capture verso (back)
     const verso = await html2canvas(document.querySelector('.verso'));
-    const versoImg = verso.toDataURL('image/png');
-
-    // Add cards to PDF
-    pdf.addImage(rectoImg, 'PNG', 0, 0, 3.375, 2.125);
-    pdf.addImage(versoImg, 'PNG', 3.375, 0, 3.375, 2.125);
+    
+    // Add to PDF vertically
+    pdf.addImage(recto.toDataURL('image/png'), 'PNG', 0, 0, 3.375, 2.125);
+    pdf.addImage(verso.toDataURL('image/png'), 'PNG', 0, 2.2, 3.375, 2.125);
     
     pdf.save('business-card.pdf');
 }
 
 function resetForm() {
-    // Clear all form inputs
     document.getElementById('businessCardForm').reset();
-    
-    // Reset company details
     document.getElementById('company').value = 'msc';
     updateCompanyDetails();
-    
-    // Trigger new generation
-    generateBusinessCard();
 }
-
-// Initial generation
-generateBusinessCard();
