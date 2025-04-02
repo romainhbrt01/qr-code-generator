@@ -1,0 +1,118 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f4;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    display: flex;
+    gap: 40px;
+    max-width: 1200px;
+    width: 100%;
+}
+
+.form-section {
+    flex: 1;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.preview-section {
+    flex: 1;
+    position: relative;
+}
+
+.business-card {
+    background: white;
+    width: 3.375in;
+    height: 2.125in;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+.company-logo {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 70px;
+    height: auto;
+}
+
+.card-content h1 {
+    font-size: 1.2rem;
+    margin: 35px 0 5px 0;
+}
+
+.card-content h2 {
+    font-size: 0.8rem;
+    color: #666;
+    margin: 0 0 15px 0;
+}
+
+.company-info p {
+    font-size: 0.7rem;
+    margin: 3px 0;
+}
+
+.contact-info {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+}
+
+.qr-code-container {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    text-align: center;
+}
+
+.qr-code {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 10px;
+}
+
+.download-btn {
+    background: #f4e4b2;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.7rem;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+button {
+    background: #f4e4b2;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+}
+
+button:hover {
+    background: #e5d3a1;
+}
