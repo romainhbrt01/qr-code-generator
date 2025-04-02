@@ -28,81 +28,104 @@ function initializeForm() {
 
 function updateCompanyDetails() {
     const company = document.getElementById('company').value;
-    document.getElementById('website').value = COMPANY_DATA[company].website;
     generateBusinessCard();
 }
 
 function generateBusinessCard() {
     // Get form values
     const company = document.getElementById('company').value;
-    const addressLines = document.getElementById('companyAddress').value.split('\n');
+    const firstName = document.getElementById('firstName').value || "JOHN";
+    const lastName = document.getElementById('lastName').value || "DOE";
+    const jobTitle = document.getElementById('jobTitle').value || "POSITION";
     
-    // Update Recto elements
-    document.getElementById('previewFirstName').textContent = document.getElementById('firstName').value;
-    document.getElementById('previewLastName').textContent = document.getElementById('lastName').value;
+    // Parse address lines
+    const addressText = document.getElementById('companyAddress').value || "STREET ADDRESS\n1234 CITY\nCOUNTRY";
+    const addressLines = addressText.split('\n');
+    
+    const phone = document.getElementById('phone').value || "+123 456 789";
+    const mobile = document.getElementById('mobile').value || "+987 654 321";
+    const email = document.getElementById('email').value || "email@company.com";
+
+    // Update preview elements
+    document.getElementById('previewName').textContent = `${firstName} ${lastName}`.toUpperCase();
+    document.getElementById('previewJobTitle').textContent = jobTitle.toUpperCase();
     document.getElementById('previewCompanyName').textContent = COMPANY_DATA[company].displayName;
     
-    // Update Address
-    document.getElementById('previewAddressRoad').textContent = addressLines[0] || '';
-    document.getElementById('previewAddressZipCity').textContent = addressLines[1] || '';
-    document.getElementById('previewAddressCountry').textContent = addressLines[2] || '';
-
-    // Update Contact Info
-    document.getElementById('previewPhone').textContent = `T. ${document.getElementById('phone').value}`;
-    document.getElementById('previewMobile').textContent = `M. ${document.getElementById('mobile').value}`;
+    // Update address lines
+    document.getElementById('previewAddressLine1').textContent = addressLines[0] || "";
+    document.getElementById('previewAddressLine2').textContent = addressLines[1] || "";
+    document.getElementById('previewAddressLine3').textContent = addressLines[2] || "";
+    
+    document.getElementById('previewPhone').textContent = `T. ${phone}`;
+    document.getElementById('previewEmail').textContent = email;
     document.getElementById('previewWebsite').textContent = COMPANY_DATA[company].website;
 
-    // Update Logos
-    const mainLogo = document.getElementById('previewLogo');
-    const qrLogo = document.getElementById('qrLogoOverlay');
-    mainLogo.src = COMPANY_DATA[company].logo;
-    qrLogo.src = COMPANY_DATA[company].logo;
-    qrLogo.style.display = company === 'medlog' ? 'none' : 'block';
+    // Update company logo
+    const logoImg = document.getElementById('previewLogo');
+    logoImg.src = COMPANY_DATA[company].logo;
 
     // Generate QR Code
-    generateQRCode(company);
+    generateQRCode(company, {
+        firstName,
+        lastName,
+        jobTitle,
+        company: COMPANY_DATA[company].displayName,
+        phone,
+        mobile,
+        email,
+        website: COMPANY_DATA[company].website,
+        address: addressText
+    });
 }
 
-function generateQRCode(company) {
+function generateQRCode(company, details) {
     const vCardData = [
-        'BEGIN:VCARD',
-        'VERSION:3.0',
-        `FN:${document.getElementById('firstName').value} ${document.getElementById('lastName').value}`,
-        `N:${document.getElementById('lastName').value};${document.getElementById('firstName').value};;;`,
-        `TITLE:${document.getElementById('jobTitle').value}`,
-        `ORG:${COMPANY_DATA[company].displayName}`,
-        `TEL:${document.getElementById('phone').value}`,
-        `TEL;CELL:${document.getElementById('mobile').value}`,
-        `EMAIL:${document.getElementById('email').value}`,
-        `URL:${COMPANY_DATA[company].website}`,
-        `ADR:;;${document.getElementById('companyAddress').value}`,
-        `NOTE:${document.getElementById('country').value}`,
-        'END:VCARD'
+        "BEGIN:VCARD",
+        "VERSION:3.0",
+        `FN:${details.firstName} ${details.lastName}`,
+        `N:${details.lastName};${details.firstName};;;`,
+        `TITLE:${details.jobTitle}`,
+        `ORG:${details.company}`,
+        `TEL;WORK:${details.phone}`,
+        `TEL;CELL:${details.mobile}`,
+        `EMAIL:${details.email}`,
+        `URL:${details.website}`,
+        `ADR:;;${details.address}`,
+        "END:VCARD"
     ].join('\n');
 
     const encodedData = encodeURIComponent(vCardData);
     const qrCode = document.getElementById('previewQrCode');
+    const qrLogo = document.getElementById('qrLogoOverlay');
     
-    if(company === 'medlog') {
+    if (company === 'medlog') {
         qrCode.src = `https://qr-code-generator-romain-eghpcgd2drhje2bw.canadacentral-01.azurewebsites.net/generate?text=${encodedData}`;
+        qrLogo.style.display = 'none';
     } else {
-        qrCode.src = `https://qr-code-generator-romain-v2-dtezhae4hjbpeyd2.westeurope-01.azurewebsites.net/generate?text=${encodedData}&logo=${encodeURIComponent(COMPANY_DATA[company].logo)}`;
+        qrCode.src = `https://qr-code-generator-romain-v2-dtezhae4hjbpeyd2.westeurope-01.azurewebsites.net/generate?text=${encodedData}`;
+        qrLogo.src = COMPANY_DATA[company].logo;
+        qrLogo.style.display = 'block';
     }
 }
 
 async function downloadCard() {
     const pdf = new jspdf.jsPDF({
+        orientation: "portrait",
         unit: "in",
-        format: [3.375, 4.25]
+        format: [3.375, 4.5] // Cards stacked vertically with spacing
     });
 
-    // Capture cards
+    // Capture recto (front)
     const recto = await html2canvas(document.querySelector('.recto'));
-    const verso = await html2canvas(document.querySelector('.verso'));
+    const rectoImg = recto.toDataURL('image/png');
     
-    // Add to PDF vertically
-    pdf.addImage(recto.toDataURL('image/png'), 'PNG', 0, 0, 3.375, 2.125);
-    pdf.addImage(verso.toDataURL('image/png'), 'PNG', 0, 2.2, 3.375, 2.125);
+    // Capture verso (back)
+    const verso = await html2canvas(document.querySelector('.verso'));
+    const versoImg = verso.toDataURL('image/png');
+
+    // Add cards to PDF with spacing
+    pdf.addImage(rectoImg, 'PNG', 0, 0, 3.375, 2.125);
+    pdf.addImage(versoImg, 'PNG', 0, 2.375, 3.375, 2.125); // Added 0.25in spacing
     
     pdf.save('business-card.pdf');
 }
@@ -110,5 +133,5 @@ async function downloadCard() {
 function resetForm() {
     document.getElementById('businessCardForm').reset();
     document.getElementById('company').value = 'msc';
-    updateCompanyDetails();
+    generateBusinessCard();
 }
