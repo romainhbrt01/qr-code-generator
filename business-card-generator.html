@@ -33,7 +33,7 @@
                 </div>
 
                 <div class="form-group">
-                    <textarea id="companyAddress" placeholder="Company Address (Road, ZIP & City, Country)" required></textarea>
+                    <textarea id="companyAddress" placeholder="Street Address&#10;ZIP City&#10;Country" required></textarea>
                 </div>
 
                 <div class="form-group">
@@ -43,9 +43,9 @@
 
                 <div class="form-group">
                     <input type="email" id="email" placeholder="Email" required>
-                    <input type="text" id="country" placeholder="Country" required>
                 </div>
 
+                <!-- Buttons -->
                 <div class="button-group">
                     <button type="button" onclick="generateBusinessCard()">GENERATE CARD</button>
                     <button type="button" onclick="resetForm()">RESET</button>
@@ -56,43 +56,45 @@
 
         <!-- Business Card Preview -->
         <div class="preview-section">
-            <!-- Recto (Front) -->
-            <div class="business-card recto">
-                <div class="name-container">
-                    <h1 id="previewFirstName"></h1>
-                    <h1 id="previewLastName"></h1>
-                </div>
-                
-                <div class="company-name" id="previewCompanyName"></div>
-
-                <div class="bottom-info">
-                    <div class="address-container">
-                        <p id="previewAddressRoad"></p>
-                        <p id="previewAddressZipCity"></p>
-                        <p id="previewAddressCountry"></p>
-                    </div>
-
-                    <div class="contact-info-container">
+            <!-- Card container -->
+            <div class="card-container">
+                <!-- Recto (Front) -->
+                <div class="business-card recto">
+                    <div class="card-header">
+                        <div class="name-title">
+                            <h1 id="previewName">JOHN DOE</h1>
+                            <p id="previewJobTitle">POSITION</p>
+                        </div>
                         <img id="previewLogo" class="company-logo" alt="Company Logo">
-                        <div class="contact-details">
-                            <p id="previewPhone"></p>
-                            <p id="previewMobile"></p>
-                            <p id="previewWebsite"></p>
+                    </div>
+                    
+                    <div class="company-name" id="previewCompanyName">MSC MEDITERRANEAN SHIPPING COMPANY</div>
+                    
+                    <div class="card-footer">
+                        <div class="address-block">
+                            <p id="previewAddressLine1">CHEMIN RIEU 12-14</p>
+                            <p id="previewAddressLine2">1208 GENÈVE</p>
+                            <p id="previewAddressLine3">SWITZERLAND</p>
+                        </div>
+                        <div class="contact-block">
+                            <p id="previewPhone">T. +41 227039160</p>
+                            <p id="previewEmail">email@msc.com</p>
+                            <p id="previewWebsite">www.msc.com</p>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Verso (Back) -->
-            <div class="business-card verso">
-                <div class="qr-code-container">
-                    <img id="previewQrCode" class="qr-code" alt="QR Code">
-                    <img id="qrLogoOverlay" class="logo-overlay" alt="Logo">
+                <!-- Verso (Back) -->
+                <div class="business-card verso">
+                    <div class="qr-code-container">
+                        <img id="previewQrCode" class="qr-code" alt="QR Code">
+                        <img id="qrLogoOverlay" class="logo-overlay" alt="Logo">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
+    
     <a href="https://qr-code-generator-romain-eghpcgd2drhje2bw.canadacentral-01.azurewebsites.net/" 
        class="main-page-link">← Back to Main Page</a>
 
