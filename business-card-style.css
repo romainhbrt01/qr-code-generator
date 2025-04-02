@@ -1,61 +1,60 @@
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f4f4f4;
     margin: 0;
     padding: 20px;
-    background-color: #f4f4f4;
     min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .container {
     display: flex;
     gap: 40px;
     max-width: 1200px;
-    width: 100%;
+    margin: 0 auto;
 }
 
-.form-section {
+.form-section, .preview-section {
     flex: 1;
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-.preview-section {
-    flex: 1;
-    position: relative;
+.business-card-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .business-card {
-    background: white;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     width: 3.375in;
     height: 2.125in;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     position: relative;
+    padding: 15px;
 }
 
-.company-logo {
+/* Recto (Front) Styles */
+.recto .company-logo {
+    width: 70px;
+    height: auto;
     position: absolute;
     top: 10px;
     right: 10px;
-    width: 70px;
-    height: auto;
 }
 
-.card-content h1 {
-    font-size: 1.2rem;
+.recto .card-content {
+    position: relative;
+    height: 100%;
+}
+
+.recto h1 {
     margin: 35px 0 5px 0;
+    font-size: 1.2rem;
 }
 
-.card-content h2 {
+.recto h2 {
+    margin: 0 0 15px 0;
     font-size: 0.8rem;
     color: #666;
-    margin: 0 0 15px 0;
 }
 
 .company-info p {
@@ -66,29 +65,30 @@ body {
 .contact-info {
     position: absolute;
     bottom: 15px;
-    left: 15px;
+    left: 0;
+    width: 100%;
 }
 
-.qr-code-container {
-    position: absolute;
-    bottom: 15px;
-    right: 15px;
-    text-align: center;
+/* Verso (Back) Styles */
+.verso .qr-code-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
 }
 
 .qr-code {
-    width: 80px;
-    height: 80px;
-    margin-bottom: 10px;
+    width: 145px;
+    height: 145px;
 }
 
 .download-btn {
-    background: #f4e4b2;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #f4e4b2;
     border: none;
-    padding: 8px 15px;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 0.7rem;
 }
 
 .form-group {
@@ -104,14 +104,24 @@ input, select, textarea {
     box-sizing: border-box;
 }
 
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
 button {
-    background: #f4e4b2;
-    border: none;
     padding: 10px 20px;
+    background-color: #f4e4b2;
+    border: none;
     border-radius: 4px;
     cursor: pointer;
-    width: 100%;
 }
+
+button:hover {
+    background-color: #e5d3a1;
+}
+
 
 button:hover {
     background: #e5d3a1;
